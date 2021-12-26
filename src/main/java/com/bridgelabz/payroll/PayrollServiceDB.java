@@ -1,6 +1,5 @@
 package com.bridgelabz.payroll;
 
-import java.awt.DisplayMode;
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.DriverManager;
@@ -43,21 +42,45 @@ public class PayrollServiceDB {
 
 	private void OperateDB() throws SQLException {
 		Scanner sc = new Scanner(System.in);
-		System.out.println("Enter 1 to continue");
 		int exit = 1;
 
-		while (exit == 1) {
+		do {
+			System.out.println("Database operation \n1.display\n2.insert\n3.update");
 			int input = sc.nextInt();
 			switch (input) {
 			case 1:
 				display();
 				break;
 			case 2:
+				input();
+				break;
+			case 3:
 				update();
 				break;
+			default:
+				System.out.println("Wrong input");
 			}
-		}
+			System.out.println("Enter 1 to continue");
+			exit = sc.nextInt();
 
+		} while (exit == 1);
+		sc.close();
+
+	}
+
+	private void input() throws SQLException {
+		String insertQuery = "insert into employee values ('emp6','BabuRao','7894561230','M','2000-01-02',1,'CSE',200000.00);";
+		Statement stmt = null;
+		int res = 0;
+		try {
+			stmt = con.createStatement();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		res = stmt.executeUpdate(insertQuery);
+		if (res > 0) {
+			System.out.println("Data got inserted");
+		}
 	}
 
 	private void update() throws SQLException {
@@ -72,7 +95,7 @@ public class PayrollServiceDB {
 		}
 		res = stmt.executeUpdate(updateQuery);
 		if (res > 0) {
-			System.out.println("Data got inseted");
+			System.out.println("Data got updated");
 		}
 
 	}
