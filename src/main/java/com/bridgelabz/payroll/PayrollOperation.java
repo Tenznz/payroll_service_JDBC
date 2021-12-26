@@ -5,7 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-public class PayrollUI {
+public class PayrollOperation {
 
 	public void input() throws SQLException {
 		String insertQuery = "insert into employee values(?,?,?,?,?,?,?,?);";

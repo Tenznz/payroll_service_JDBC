@@ -41,7 +41,7 @@ public class PayrollServiceDB {
 	private void OperateDB() throws SQLException {
 		Scanner sc = new Scanner(System.in);
 		int exit = 1;
-		PayrollUI payrollUI = new PayrollUI();
+		PayrollOperation payrollUI = new PayrollOperation();
 		do {
 			System.out.println("Database operation \n1.display\n2.insert\n3.update");
 			int input = sc.nextInt();
