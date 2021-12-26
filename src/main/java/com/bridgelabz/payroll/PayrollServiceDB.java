@@ -3,7 +3,9 @@ package com.bridgelabz.payroll;
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Enumeration;
 
 public class PayrollServiceDB {
@@ -12,7 +14,9 @@ public class PayrollServiceDB {
 		String jdbcURL = "jdbc:mysql://localhost:3306/payroll_service?useSSL=false";
 		String userName = "root";
 		String password = "root";
-		Connection con;
+		Connection con = null;
+		Statement stmt = null;
+		ResultSet res = null;
 		try {
 			Class.forName("com.mysql.cj.jdbc.Driver");
 			System.out.print("Driver loaded");
@@ -27,9 +31,26 @@ public class PayrollServiceDB {
 			con = DriverManager.getConnection(jdbcURL, userName, password);
 			System.out.println("Connection successfull! " + con);
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		try {
+			stmt = con.createStatement();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		String query = "Select * from Employee;";
+
+		try {
+			res = stmt.executeQuery(query);
+
+			while (res.next()) {
+				System.out.println(res.getString(1) + " " + res.getString(2) + " " + res.getString(3) + " "
+						+ res.getString(4) + " " + res.getString(5) + " " + res.getString(6) + " " + res.getString(7));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
 	}
 
 	private static void listDriver() {
