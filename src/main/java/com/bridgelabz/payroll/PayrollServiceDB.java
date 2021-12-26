@@ -43,7 +43,8 @@ public class PayrollServiceDB {
 		int exit = 1;
 		PayrollOperation payrollUI = new PayrollOperation();
 		do {
-			System.out.println("Database operation \n1.display\n2.insert\n3.update\n4.search\n5.salary range");
+			System.out.println(
+					"Database operation \n1.display\n2.insert\n3.update\n4.search\n5.salary range\n6.total salary\n7.group by gender");
 			int input = sc.nextInt();
 			switch (input) {
 			case 1:
@@ -60,6 +61,12 @@ public class PayrollServiceDB {
 				break;
 			case 5:
 				payrollUI.searchRange();
+				break;
+			case 6:
+				payrollUI.totalSalary();
+				break;
+			case 7:
+				payrollUI.groupBy();
 				break;
 
 			default:

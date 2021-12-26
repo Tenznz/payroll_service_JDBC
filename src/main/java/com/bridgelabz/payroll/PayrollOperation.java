@@ -8,6 +8,7 @@ import java.util.Scanner;
 
 public class PayrollOperation {
 	Scanner sc = new Scanner(System.in);
+
 	public void input() throws SQLException {
 		String insertQuery = "insert into employee values(?,?,?,?,?,?,?,?);";
 		PreparedStatement pstmt = null;
@@ -70,7 +71,7 @@ public class PayrollOperation {
 	}
 
 	public void search() throws SQLException {
-		
+
 		String printQuery = "select * from employee where name=?;";
 		PreparedStatement pstmt = null;
 		ResultSet res = null;
@@ -83,8 +84,8 @@ public class PayrollOperation {
 		System.out.println(executedQuery);
 		while (res.next()) {
 			System.out.println(res.getString(1) + " " + res.getString(2) + " " + res.getString(3) + " "
-					+ res.getString(4) + " " + res.getString(5) + " " + res.getString(6) + " " + res.getString(7)+ " "
-							+ res.getDouble(8));
+					+ res.getString(4) + " " + res.getString(5) + " " + res.getString(6) + " " + res.getString(7) + " "
+					+ res.getDouble(8));
 		}
 	}
 
@@ -104,8 +105,64 @@ public class PayrollOperation {
 		System.out.println(executedQuery);
 		while (res.next()) {
 			System.out.println(res.getString(1) + " " + res.getString(2) + " " + res.getString(3) + " "
-					+ res.getString(4) + " " + res.getString(5) + " " + res.getString(6) + " " + res.getString(7)+ " "
-							+ res.getDouble(8));
+					+ res.getString(4) + " " + res.getString(5) + " " + res.getString(6) + " " + res.getString(7) + " "
+					+ res.getDouble(8));
+		}
+	}
+
+	public void totalSalary() throws SQLException {
+		System.out.println("1.sum\n2.avg\n3.count\n4.min\n5.max");
+		;
+		String query = "";
+		int input = sc.nextInt();
+		switch (input) {
+		case 1:
+			query = "SELECT sum(salary)";
+			break;
+		case 2:
+			query = "SELECT avg(salary)";
+			break;
+		case 3:
+			query = "SELECT count(*)";
+			break;
+		case 4:
+			query = "SELECT min(salary)";
+			break;
+		case 5:
+			query = "SELECT max(salary)";
+			break;
+
+		}
+		String mysqlQuery = query + " FROM Employee;";
+		Statement stmt = null;
+		ResultSet res = null;
+		try {
+			stmt = PayrollServiceDB.con.createStatement();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		res = stmt.executeQuery(mysqlQuery);
+		String executedQuery = res.getStatement().toString();
+		System.out.println(executedQuery);
+		while (res.next()) {
+			System.out.println(res.getDouble(1));
+		}
+	}
+
+	public void groupBy() throws SQLException {
+		String printQuery = "SELECT gender,count(*) FROM Employee group by gender;";
+		Statement stmt = null;
+		ResultSet res = null;
+		try {
+			stmt = PayrollServiceDB.con.createStatement();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		res = stmt.executeQuery(printQuery);
+
+		while (res.next()) {
+			System.out.println(res.getString(1) + " " + res.getString(2));
 		}
 	}
 }
