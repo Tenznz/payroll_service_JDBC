@@ -15,6 +15,7 @@ public class PayrollOperation {
 	List<EmployeePayrollData> emp = new ArrayList<>();
 
 	public int insert() throws SQLException {
+		EmployeePayrollConnection.con.setAutoCommit(false);;
 		String insertQuery = "insert into employee values(?,?,?,?,?,?,?,?);";
 		PreparedStatement pstmt = null;
 		int res = 0;
@@ -44,11 +45,40 @@ public class PayrollOperation {
 		pstmt.setString(7, dept_id);
 		pstmt.setDouble(8, salary);
 		res = pstmt.executeUpdate();
-
+		insertPayrollTable(id, salary);
+		try {
+			EmployeePayrollConnection.con.commit();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 		if (res > 0) {
 			System.out.println("Data got inserted");
 		}
 		return res;
+	}
+
+	@SuppressWarnings("static-access")
+	void insertPayrollTable(String id, double basicPay) throws SQLException {
+		try (Statement pstmt = EmployeePayrollConnection.con.createStatement()) {
+			double deductions = basicPay * 0.2;
+			double taxablePay = basicPay - deductions;
+			double tax = taxablePay * 0.1;
+			double netPay = basicPay - tax;
+			String insertQuery = String.format("insert into payroll values('%s',%s,%s,%s,%s,%s);", id, basicPay,
+					deductions, taxablePay, tax, netPay);
+			int rowAffected = pstmt.executeUpdate(insertQuery);
+			if (rowAffected == 1) {
+				System.out.println(insertQuery);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("insertion got rollback");
+			EmployeePayrollConnection.con.rollback();
+		}
+
+		PayrollServiceDBMain payrollDB = new PayrollServiceDBMain();
+		payrollDB.OperateDB();
+
 	}
 
 	public int update() throws SQLException {

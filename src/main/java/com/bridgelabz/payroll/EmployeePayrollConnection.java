@@ -7,7 +7,22 @@ import java.sql.SQLException;
 import java.util.Enumeration;
 
 public class EmployeePayrollConnection {
+	public static EmployeePayrollConnection instance;
+
+	private EmployeePayrollConnection() {
+
+	}
+
+	public static EmployeePayrollConnection getInstance() {
+		if (instance == null) {
+			instance = new EmployeePayrollConnection();
+		}
+		return instance;
+
+	}
+
 	public static Connection con = null;
+
 	public void getConnection() {
 		String jdbcURL = "jdbc:mysql://localhost:3306/payroll_service?useSSL=false";
 		String userName = "root";
@@ -39,8 +54,14 @@ public class EmployeePayrollConnection {
 			System.out.println(" " + driverClass.getClass().getName());
 		}
 	}
+
 	public void closeHeavyClass() throws SQLException {
 		con.close();
+	}
+
+	public void setAutoCommit(boolean falseCommit) throws SQLException {
+		con.setAutoCommit(false);
+
 	}
 
 }

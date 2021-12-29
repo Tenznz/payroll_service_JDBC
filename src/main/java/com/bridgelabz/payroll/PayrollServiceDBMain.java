@@ -7,13 +7,14 @@ public class PayrollServiceDBMain {
 
 	public static void main(String[] args) throws SQLException {
 		PayrollServiceDBMain payrollDB = new PayrollServiceDBMain();
-		EmployeePayrollConnection connection=new EmployeePayrollConnection();
+		EmployeePayrollConnection connection = EmployeePayrollConnection.getInstance();
 		connection.getConnection();
-		payrollDB.OperateDB(); 
+		payrollDB.OperateDB();
+		connection.closeHeavyClass();
 
 	}
 
-	private void OperateDB() throws SQLException {
+	public void OperateDB() throws SQLException {
 		Scanner sc = new Scanner(System.in);
 		int exit = 1;
 		PayrollOperation payrollUI = new PayrollOperation();
@@ -51,6 +52,6 @@ public class PayrollServiceDBMain {
 			exit = sc.nextInt();
 
 		} while (exit == 1);
-		sc.close();
+
 	}
 }
