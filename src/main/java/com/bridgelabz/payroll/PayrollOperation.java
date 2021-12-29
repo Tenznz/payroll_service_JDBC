@@ -1,40 +1,62 @@
 package com.bridgelabz.payroll;
 
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class PayrollOperation {
 	Scanner sc = new Scanner(System.in);
+	private int rowCount;
+	List<EmployeePayrollData> emp = new ArrayList<>();
 
-	public void input() throws SQLException {
+	public int insert() throws SQLException {
 		String insertQuery = "insert into employee values(?,?,?,?,?,?,?,?);";
 		PreparedStatement pstmt = null;
 		int res = 0;
-		pstmt = PayrollServiceDB.con.prepareStatement(insertQuery);
-		pstmt.setString(1, "emp7");
-		pstmt.setString(2, "sham");
-		pstmt.setString(3, "4564564655");
-		pstmt.setString(4, "M");
-		pstmt.setString(5, "2002-12-01");
-		pstmt.setInt(6, 1);
-		pstmt.setString(7, "ECE");
-		pstmt.setDouble(8, 100000.00);
-
+		pstmt = EmployeePayrollConnection.con.prepareStatement(insertQuery);
+		System.out.print("Enter empID: ");
+		String id = sc.next();
+		System.out.print("Employee Name:");
+		String name = sc.next();
+		System.out.print("Employee phoneNumber: ");
+		String number = sc.next();
+		System.out.print("Gender M/F: ");
+		String gender = sc.next();
+		System.out.print("Enter Date in yyyy-mm-dd: ");
+		String date = sc.next();
+		System.out.print("Company ID");
+		int company_id = sc.nextInt();
+		System.out.print("Department ID: ");
+		String dept_id = sc.next();
+		System.out.println("Salary");
+		double salary = sc.nextDouble();
+		pstmt.setString(1, id);
+		pstmt.setString(2, name);
+		pstmt.setString(3, number);
+		pstmt.setString(4, gender);
+		pstmt.setString(5, date);
+		pstmt.setInt(6, company_id);
+		pstmt.setString(7, dept_id);
+		pstmt.setDouble(8, salary);
 		res = pstmt.executeUpdate();
+
 		if (res > 0) {
 			System.out.println("Data got inserted");
 		}
+		return res;
 	}
 
-	public void update() throws SQLException {
+	public int update() throws SQLException {
 		String updateQuery = "update employee set salary=? where emp_id=?";
 		PreparedStatement pstmt = null;
 		int res = 0;
 		try {
-			pstmt = PayrollServiceDB.con.prepareStatement(updateQuery);
+			pstmt = EmployeePayrollConnection.con.prepareStatement(updateQuery);
 			System.out.println("Enter emp_id");
 			String emp_ID = sc.next();
 			pstmt.setString(2, emp_ID);
@@ -48,26 +70,22 @@ public class PayrollOperation {
 		if (res > 0) {
 			System.out.println("Data got updated");
 		}
+		return res;
 
 	}
 
-	public void display() throws SQLException {
+	public List<EmployeePayrollData> display() throws SQLException {
 		String query = "Select * from Employee;";
 		Statement stmt = null;
 		ResultSet res = null;
 		try {
-			stmt = PayrollServiceDB.con.createStatement();
+			stmt = EmployeePayrollConnection.con.createStatement();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 
 		res = stmt.executeQuery(query);
-
-		while (res.next()) {
-			System.out.println(res.getString(1) + " " + res.getString(2) + " " + res.getString(3) + " "
-					+ res.getString(4) + " " + res.getString(5) + " " + res.getString(6) + " " + res.getString(7) + " "
-					+ res.getDouble(8));
-		}
+		return getEmployeeTable(res);
 	}
 
 	public void search() throws SQLException {
@@ -75,25 +93,21 @@ public class PayrollOperation {
 		String printQuery = "select * from employee where name=?;";
 		PreparedStatement pstmt = null;
 		ResultSet res = null;
-		pstmt = PayrollServiceDB.con.prepareStatement(printQuery);
+		pstmt = EmployeePayrollConnection.con.prepareStatement(printQuery);
 		System.out.println("Enter name you want to search from table");
 		String data = sc.next();
 		pstmt.setString(1, data);
 		res = pstmt.executeQuery();
 		String executedQuery = res.getStatement().toString();
 		System.out.println(executedQuery);
-		while (res.next()) {
-			System.out.println(res.getString(1) + " " + res.getString(2) + " " + res.getString(3) + " "
-					+ res.getString(4) + " " + res.getString(5) + " " + res.getString(6) + " " + res.getString(7) + " "
-					+ res.getDouble(8));
-		}
+		getEmployeeTable(res);
 	}
 
 	public void searchRange() throws SQLException {
 		String printQuery = "SELECT * FROM Employee WHERE salary BETWEEN ? AND ?;";
 		PreparedStatement pstmt = null;
 		ResultSet res = null;
-		pstmt = PayrollServiceDB.con.prepareStatement(printQuery);
+		pstmt = EmployeePayrollConnection.con.prepareStatement(printQuery);
 		System.out.print("salary range from :");
 		double salary1 = sc.nextDouble();
 		pstmt.setDouble(1, salary1);
@@ -103,11 +117,34 @@ public class PayrollOperation {
 		res = pstmt.executeQuery();
 		String executedQuery = res.getStatement().toString();
 		System.out.println(executedQuery);
-		while (res.next()) {
-			System.out.println(res.getString(1) + " " + res.getString(2) + " " + res.getString(3) + " "
-					+ res.getString(4) + " " + res.getString(5) + " " + res.getString(6) + " " + res.getString(7) + " "
-					+ res.getDouble(8));
+		getEmployeeTable(res);
+	}
+
+	private List<EmployeePayrollData> getEmployeeTable(ResultSet res) {
+		List<EmployeePayrollData> empList = new ArrayList<>();
+		try {
+			while (res.next()) {
+				rowCount++;
+				String empID = res.getString(1);
+				String name = res.getString(2);
+				String phoneNumber = res.getString(3);
+				String gender = res.getString(4);
+				Date start = res.getDate(5);
+				int companyID = res.getInt(6);
+				String dept_ID = res.getString(7);
+				double salary = res.getDouble(8);
+				empList.add(
+						new EmployeePayrollData(empID, name, phoneNumber, gender, start, companyID, dept_ID, salary));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
+		empList.forEach(System.out::println);
+		return empList;
+	}
+
+	public int getRowCount() {
+		return rowCount;
 	}
 
 	public void totalSalary() throws SQLException {
@@ -137,7 +174,7 @@ public class PayrollOperation {
 		Statement stmt = null;
 		ResultSet res = null;
 		try {
-			stmt = PayrollServiceDB.con.createStatement();
+			stmt = EmployeePayrollConnection.con.createStatement();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -154,7 +191,7 @@ public class PayrollOperation {
 		Statement stmt = null;
 		ResultSet res = null;
 		try {
-			stmt = PayrollServiceDB.con.createStatement();
+			stmt = EmployeePayrollConnection.con.createStatement();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
